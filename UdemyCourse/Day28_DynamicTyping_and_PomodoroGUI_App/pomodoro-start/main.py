@@ -1,4 +1,7 @@
 from tkinter import *
+import time
+import math
+
 # ---------------------------- CONSTANTS ------------------------------- #
 PINK = "#e2979c"
 RED = "#e7305b"
@@ -9,34 +12,46 @@ WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 
-# ---------------------------- TIMER RESET ------------------------------- # 
 
-# ---------------------------- TIMER MECHANISM ------------------------------- # 
+# ---------------------------- TIMER RESET ------------------------------- #
 
-# ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
+# ---------------------------- TIMER MECHANISM ------------------------------- #
+def timer_initiate():
+    count_down(5)
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Pomodoro")
 window.config(padx=100, pady=50, bg=YELLOW)
 
-
-my_label = Label(text="Timer", font=(FONT_NAME,30,'bold'))
-my_label.pack()
-my_label.config(bg=YELLOW,fg=GREEN)
+my_label = Label(text="Timer", font=(FONT_NAME, 30, 'bold'))
+my_label.config(bg=YELLOW, fg=GREEN)
+my_label.grid(column=2, row=1)
 
 canvas = Canvas(width=200, height=224, bg=YELLOW, highlightthickness=0)
 my_tomato_img = PhotoImage(file="tomato.png")
-canvas.create_image(100,112, image=my_tomato_img)
-canvas.create_text(103,132,text="00:00", fill="white", font=(FONT_NAME, 13,"bold"))
-canvas.pack()
+canvas.create_image(100, 112, image=my_tomato_img)
+timer_text = canvas.create_text(103, 132, text="00:00", fill="white", font=(FONT_NAME, 13, "bold"))
+canvas.grid(column=2, row=2)
 
-start_button = Button(text="Start")
-start_button.pack()
+
+# ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
+
+def count_down(count):
+    canvas.itemconfig(timer_text, text=count)
+    if count > 0:
+        window.after(1000, count_down, count - 1)
+
+
+count_down(5)
+
+start_button = Button(text="Start", command=timer_initiate)
+start_button.grid(column=1, row=3)
 
 reset_button = Button(text="Reset")
-reset_button.pack()
+reset_button.grid(column=3, row=3)
 
-
+check_marks = Label(text='✔', fg=GREEN, bg=YELLOW)
+check_marks.grid(column=2, row=3)
 
 window.mainloop()
