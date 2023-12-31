@@ -1,5 +1,4 @@
 from tkinter import *
-import time
 import math
 
 # ---------------------------- CONSTANTS ------------------------------- #
@@ -11,13 +10,28 @@ FONT_NAME = "Courier"
 WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
-
+REPS = 0
 
 # ---------------------------- TIMER RESET ------------------------------- #
 
 # ---------------------------- TIMER MECHANISM ------------------------------- #
-def timer_initiate():
-    count_down(5)
+def timer_initiate(*reset):
+    if len(reset) == 0 :
+        count_down(1800)
+    else:
+        count_down(0)
+
+# ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
+
+def count_down(count):
+    minutes = math.floor(count / 60)
+    seconds = count % 60
+    if 0<=seconds<10 :
+        seconds = "0"+str(seconds)
+    canvas.itemconfig(timer_text, text=f"{minutes}:{seconds}")
+    if count > 0:
+        window.after(1000, count_down, count - 1)
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
@@ -34,21 +48,10 @@ canvas.create_image(100, 112, image=my_tomato_img)
 timer_text = canvas.create_text(103, 132, text="00:00", fill="white", font=(FONT_NAME, 13, "bold"))
 canvas.grid(column=2, row=2)
 
-
-# ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
-
-def count_down(count):
-    canvas.itemconfig(timer_text, text=count)
-    if count > 0:
-        window.after(1000, count_down, count - 1)
-
-
-count_down(5)
-
 start_button = Button(text="Start", command=timer_initiate)
 start_button.grid(column=1, row=3)
 
-reset_button = Button(text="Reset")
+reset_button = Button(text="Reset", command=time_reset)
 reset_button.grid(column=3, row=3)
 
 check_marks = Label(text='✔', fg=GREEN, bg=YELLOW)
