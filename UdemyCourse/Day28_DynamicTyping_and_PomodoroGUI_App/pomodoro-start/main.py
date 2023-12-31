@@ -7,30 +7,75 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
-WORK_MIN = 25
-SHORT_BREAK_MIN = 5
-LONG_BREAK_MIN = 20
+WORK_MIN = 1 / 6
+SHORT_BREAK_MIN = 1 / 6
+LONG_BREAK_MIN = 1 / 6
 REPS = 0
+timer = None
+
+
+# mark = ""
 
 # ---------------------------- TIMER RESET ------------------------------- #
+def timer_reset():
+    global timer
+    global REPS
+    window.after_cancel(timer)
+    canvas.itemconfig(timer_text, text="00:00")
+    my_label.config(text="TIMER")
+    check_marks.config(text="")
+    REPS = 0
+
 
 # ---------------------------- TIMER MECHANISM ------------------------------- #
-def timer_initiate(*reset):
-    if len(reset) == 0 :
-        count_down(1800)
+def timer_initiate():
+    global REPS
+    work_sec = WORK_MIN * 60
+    short_break_sec = SHORT_BREAK_MIN * 60
+    long_break_sec = LONG_BREAK_MIN * 60
+
+    if REPS % 2 == 0 and REPS < 7:
+        print("in work statement")
+        my_label.config(fg=GREEN, text="WORK")
+        count_down(work_sec)
+        REPS = REPS + 1
+    elif REPS == 7:
+        my_label.config(fg=RED, text="LONG BREAK")
+        count_down(long_break_sec)
+        REPS = 0
+        return
     else:
-        count_down(0)
+        print("in short break statemnt")
+        my_label.config(fg=PINK, text="SHORT BREAK")
+        count_down(short_break_sec)
+        REPS = REPS + 1
+
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
 
 def count_down(count):
+    global timer
     minutes = math.floor(count / 60)
     seconds = count % 60
-    if 0<=seconds<10 :
-        seconds = "0"+str(seconds)
+    if 0 <= seconds < 10:
+        seconds = "0" + str(seconds)
     canvas.itemconfig(timer_text, text=f"{minutes}:{seconds}")
     if count > 0:
-        window.after(1000, count_down, count - 1)
+        timer = window.after(1000, count_down, count - 1)
+    elif REPS == 7:
+        mark = ""
+        for _ in range(math.floor((REPS + 1) / 2)):
+            mark = mark + "✔"
+        check_marks.config(text=mark)
+        timer_initiate()
+        return
+    elif count == 0:
+        # timer_initiate()
+        mark = ""
+        for _ in range(math.floor((REPS + 1) / 2)):
+            mark = mark + "✔"
+        check_marks.config(text=mark)
+        timer_initiate()
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -51,10 +96,10 @@ canvas.grid(column=2, row=2)
 start_button = Button(text="Start", command=timer_initiate)
 start_button.grid(column=1, row=3)
 
-reset_button = Button(text="Reset", command=time_reset)
+reset_button = Button(text="Reset", command=timer_reset)
 reset_button.grid(column=3, row=3)
 
-check_marks = Label(text='✔', fg=GREEN, bg=YELLOW)
+check_marks = Label(fg=GREEN, bg=YELLOW)
 check_marks.grid(column=2, row=3)
 
 window.mainloop()

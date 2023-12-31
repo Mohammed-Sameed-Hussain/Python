@@ -8,3 +8,4 @@ print(number)
 print(math.floor(number))
 print(math.ceil(number))
 
+print(0%2)
